@@ -1,0 +1,219 @@
+## TO Run Zookeeper Server
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+
+## TO Run Kafka Server
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-server-start.bat .\config\server.properties
+
+## TO check list of topics
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-topics.bat --zookeeper 127.0.0.1:2181 --list
+
+## TO Create Topic with partition and replication
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-topics.bat --zookeeper 127.0.0.1:2181 --topic my_topic --create --partitions 3 --replication-factor 1
+
+## TO Describe/View Topic In Detail
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-topics.bat --zookeeper 127.0.0.1:2181 --topic my_topic --describe
+
+## TO Delete Topic
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-topics.bat --zookeeper 127.0.0.1:2181 --topic my_topic --delete
+
+## To Produce data in kafka topic
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-console-producer.bat --broker-list 127.0.0.1:9092 --topic my_topic
+
+## TO Consume kafka topic message
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-console-consumer.bat --bootstrap-server 127.0.0.1:9092 --topic my_topic
+
+## To Consume kafka topic messages from beginning
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-console-consumer.bat --bootstrap-server 127.0.0.1:9092 --topic my_topic --from-beginning
+
+## TO consume kafka topic message in group (You can create mulitple consumer groups for single topic to consume topic message)
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-console-consumer.bat --bootstrap-server 127.0.0.1:9092 --topic my_topic --group my-topic-group1
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-console-consumer.bat --bootstrap-server 127.0.0.1:9092 --topic my_topic --group my-topic-group2
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-console-consumer.bat --bootstrap-server 127.0.0.1:9092 --topic my_topic --group my-topic-group3
+
+## To Get List of All Consumer Groups
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --list
+my-topic-group
+
+===========================================================
+
+There are many resetting offset options, run kafka-consumer-groups for details
+
+    --shift-by <positive_or_negative_integer>
+    --to-current
+    --to-latest
+    --to-offset <offset_integer>
+    --to-datetime <datetime_string>
+    --by-duration <duration_string>
+
+===========================================================
+## To Get topic offset details of consumer Group
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --describe --group my-topic-group
+TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+my_topic        2          4               4               0               -               -               -
+my_topic        1          6               6               0               -               -               -
+my_topic        0          5               5               0               -               -               -
+
+## To Reset topic Offset of group name for perticular topic name (OFFSET RESET TO LAST CONSUME MESSAGE)
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --group my-topic-group --reset-offsets --to-earliest --execute --topic my_topic
+
+TOPIC                          PARTITION  NEW-OFFSET
+my_topic                       2          0
+my_topic                       1          0
+my_topic                       0          0
+
+===========================================================
+
+## To Get topic offset details of consumer Group (LAG : Lagging to consume message . if LAG is 0 then all messages of that partition are consumed else pending to read messages) 
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --describe --group my-topic-group
+
+TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+my_topic        2          13              19              6               -               -               -
+my_topic        1          15              20              5               -               -               -
+my_topic        0          14              19              5               -               -               -
+
+
+
+## To Reset topic offset shift-by -10 messages  (if CURRENT-OFFSET is 13 and that offset shift-by -10 then CURRENT-OFFSET will be 3 ) 
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --group my-topic-group --reset-offsets --shift-by -10 --execute --topic my_topic
+
+TOPIC                          PARTITION  NEW-OFFSET
+my_topic                       2          3
+my_topic                       1          5
+my_topic                       0          4
+
+## To Get topic offset details of consumer Group 
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --describe --group my-topic-group
+
+TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+my_topic        2          3               19              16              -               -               -
+my_topic        1          5               20              15              -               -               -           
+my_topic        0          4               19              15              -               -               -
+
+
+## To Reset topic offset shift-by 5 messages (if CURRENT-OFFSET is 3 and that offset shift-by 5 then CURRENT-OFFSET will be 8 ) 
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --group my-topic-group --reset-offsets --shift-by 5 --execute --topic my_topic
+
+TOPIC                          PARTITION  NEW-OFFSET
+my_topic                       2          8
+my_topic                       1          10
+my_topic                       0          9
+
+## To Get topic offset details of consumer Group 
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --describe --group my-topic-group
+
+TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+my_topic        2          8               19              11              -               -               -
+my_topic        1          10              20              10              -               -               -
+my_topic        0          9               19              10              -               -               -
+
+===========================================================
+
+## To Reset topic offset --to-datetime 2018-10-05T00:50:00.000 messages 
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --group my-topic-group --reset-offsets --to-datetime 2018-10-05T00:50:00.000 --execute --topic my_topic
+
+===========================================================
+
+## To Reset topic offset --by-duration PT10M messages 
+Format:'PnDTnHnMnS'
+"PT20S" 	-- parses as "20 seconds"
+"PT15M"     -- parses as "15 minutes" (where a minute is 60 seconds)
+"PT10H"     -- parses as "10 hours" (where an hour is 3600 seconds)
+"P2D"       -- parses as "2 days" (where a day is 24 hours or 86400 seconds)
+"P2DT3H4M"  -- parses as "2 days, 3 hours and 4 minutes"
+
+
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --group my-topic-group --reset-offsets --to-offset 0 --execute --topic my_topic
+
+TOPIC                          PARTITION  NEW-OFFSET
+my_topic                       2          0
+my_topic                       1          0
+my_topic                       0          0
+
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --describe --group my-topic-group
+Consumer group 'my-topic-group' has no active members.
+
+TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+my_topic        2          0               30              30              -               -               -
+my_topic        1          0               30              30              -               -               -
+my_topic        0          0               28              28              -               -               -
+
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --group my-topic-group --reset-offsets --by-duration PT10M --execute --topic my_topic
+
+TOPIC                          PARTITION  NEW-OFFSET
+my_topic                       2          21
+my_topic                       1          20
+my_topic                       0          19
+
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --describe --group my-topic-group
+Consumer group 'my-topic-group' has no active members.
+
+TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+my_topic        2          21              30              9               -               -               -
+my_topic        1          20              30              10              -               -               -
+my_topic        0          19              28              9               -               -               -
+
+
+===========================================================
+
+## To Reset topic offset --to-offset 10 (reset CURRENT-OFFSET eqaual to 10 .. Data consume by offset 10)
+
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --describe --group my-topic-group
+
+TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+my_topic        2          6               21              15              -               -               -
+my_topic        1          5               20              15              -               -               -
+my_topic        0          4               19              15              -               -               -
+
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --group my-topic-group --reset-offsets --to-offset 10 --execute --topic my_topic
+
+TOPIC                          PARTITION  NEW-OFFSET
+my_topic                       2          10
+my_topic                       1          10
+my_topic                       0          10
+
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --describe --group my-topic-group
+
+TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+my_topic        2          10              21              11              -               -               -
+my_topic        1          10              20              10              -               -               -
+my_topic        0          10              19              9               -               -               -
+
+
+
+===========================================================
+## To Reset topic offset --to-latest messages (set CURRENT-OFFSET is match with LOG-END-OFFSET) 
+
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --describe --group my-topic-group
+Consumer group 'my-topic-group' has no active members.
+
+TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+my_topic        2          10              21              11              -               -               -
+my_topic        1          10              20              10              -               -               -
+my_topic        0          10              19              9               -               -               -
+
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --group my-topic-group --reset-offsets --to-latest --execute --topic my_topic
+
+TOPIC                          PARTITION  NEW-OFFSET
+my_topic                       2          21
+my_topic                       1          20
+my_topic                       0          19
+
+F:\Software\Kafka\kafka_2.12-2.0.0>.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --describe --group my-topic-group
+Consumer group 'my-topic-group' has no active members.
+
+TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+my_topic        2          21              21              0               -               -               -
+my_topic        1          20              20              0               -               -               -
+my_topic        0          19              19              0               -               -               -
+
+
+===========================================================
+## Producer with keys
+kafka-console-producer --broker-list 127.0.0.1:9092 --topic first_topic --property parse.key=true --property key.separator=,
+	> key,value
+    > another key,another value
+	
+## Consumer with keys
+kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic first_topic --from-beginning --property print.key=true --property key.separator=,
+
+
